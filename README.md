@@ -2,7 +2,8 @@ Python scripts to perform some tasks using FFmpeg.
 
 ### `encode-video.py`
 
-Creates an mkv file from H.265 encoded video and copies of other elementary streams from the source file.
+Creates mkv file from H.265 encoded video and copies of other elementary streams from the source file.
+If you specify a directory in the `--input` option, then all files in the specified directory are processed.
 
 **Usage:**
 ```
