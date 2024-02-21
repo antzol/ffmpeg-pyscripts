@@ -16,6 +16,7 @@ class Encoder:
         self.output = config.output
         self.crf = config.crf
         self.scale = config.scale
+        self.tune = config.tune
 
     def process(self):
         if not os.path.exists(self.input):
@@ -48,8 +49,11 @@ class Encoder:
                       '-c:V:0', 'libx265',
                       '-vtag', 'hvc1',
                       '-crf', str(self.crf),
-                      '-preset', 'slow',
-                      '-x265-params', x265_params]
+                      '-preset', 'slow']
+        if self.tune:
+            video_args.extend(['-tune', self.tune])
+        video_args.extend(['-x265-params', x265_params])
+
         cmd.extend(video_args)
 
         audio_args = ['-map', '0:a', '-c:a', 'copy']
@@ -126,6 +130,11 @@ if __name__ == '__main__':
                         default='C:/videoconv/input/')
     parser.add_argument('-o', '--output', help='Output directory',
                         default='C:/videoconv/output/')
+    parser.add_argument('--preset',
+                        choices=['ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium',
+                                 'slow', 'slower', 'veryslow', 'placebo'],
+                        help='The preset determines compression efficiency and therefore affects encoding speed.',
+                        default='slow')
     parser.add_argument('--crf',
                         help='Constant rate factor (the lower CRF, the higher the video quality)',
                         type=int, default=22)
@@ -133,6 +142,11 @@ if __name__ == '__main__':
     They are set in the format "width:height" (for example, "1920:1080").
     Any of these parameters can be set as -1 for automatic calculation (for example, "1920:-1").
     If this option is not specified, the resolution does not change.''',
+                        required=False)
+    parser.add_argument('--tune',
+                        choices=['film', 'animation', 'grain', 'stillimage', 'fastdecode', 'zerolatency',
+                                 'psnr', 'ssim'],
+                        help='Settings based upon the specifics of your input. By default, it is disabled.',
                         required=False)
     args = parser.parse_args()
 
